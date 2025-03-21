@@ -1,0 +1,16 @@
+
+services:
+
+  # FASTAPI BACKEND
+  backend:
+    build: ./backend
+    container_name: legal_advisor_backend
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+
+
+
+volumes:
+  db_data:
