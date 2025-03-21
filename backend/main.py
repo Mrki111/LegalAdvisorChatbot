@@ -50,6 +50,7 @@ class Message(Base):
 Base.metadata.create_all(bind=engine)
 
 # FastAPI Setup -------------------------------------------------------------------------------------------------------
+
 app = FastAPI(title="Legal Advisor Chatbot")
 
 class ChatRequest(BaseModel):
@@ -74,7 +75,7 @@ def get_session_history(session_id: str) -> InMemoryChatMessageHistory:
 # Helper to Retrieve Session History ----------------------------------------------------------------------------------
 
 def get_history_from_config(config):
-    # If config is a dict, extract session_id from it.
+
     if isinstance(config, dict):
         session_id = config.get("configurable", {}).get("session_id", "default_session")
     else:
@@ -86,11 +87,13 @@ def get_history_from_config(config):
 
 prompt = ChatPromptTemplate.from_messages([
     SystemMessagePromptTemplate.from_template(
-        "You are a helpful legal advisor. Provide accurate and ethical legal advice. Only answer questions related \
-        to legal matters."
+        "You are a helpful, professional legal advisor. You only answer questions strictly related to legal matters. "
+        "If a user asks about anything outside the scope of legal topics, kindly respond that you are only able to "
+        "assist with legal inquiries. Always provide accurate and ethical information within legal boundaries."
     ),
     HumanMessagePromptTemplate.from_template("{input}")
 ])
+
 
 
 # Compose the Chain and Wrap with RunnableWithMessageHistory ----------------------------------------------------------
@@ -139,6 +142,7 @@ def chat_endpoint(request: ChatRequest):
     except Exception as e:
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.get("/chat-history", response_model=List[str])
 def get_chat_history_endpoint(session_id: str):
