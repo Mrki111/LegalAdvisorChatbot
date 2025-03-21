@@ -1,7 +1,7 @@
 import traceback
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
 # LangChain imports
 from langchain_openai import ChatOpenAI
@@ -94,3 +94,16 @@ def chat_endpoint(request: ChatRequest):
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/chat-history", response_model=List[str])
+def get_chat_history_endpoint(session_id: str):
+    history = get_session_history(session_id).messages
+
+    def get_role(msg):
+        if msg.__class__.__name__ == "HumanMessage":
+            return "user"
+        elif msg.__class__.__name__ == "AIMessage":
+            return "assistant"
+        else:
+            return "unknown"
+
+    return [f"{get_role(msg)}: {msg.content}" for msg in history]
