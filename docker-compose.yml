@@ -10,6 +10,7 @@ services:
     ports:
       - "8000:8000"
 
+  # POSTGRESQL DATABASE
   db:
     image: postgres:17-alpine
     container_name: legal_advisor_db
@@ -23,5 +24,16 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+
+  # STREAMLIT FRONTEND
+  frontend:
+    build: ./frontend
+    container_name: legal_advisor_frontend
+    env_file:
+      - .env
+    ports:
+      - "8501:8501"
+    depends_on:
+      - backend
 volumes:
   db_data:
