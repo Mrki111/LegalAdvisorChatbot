@@ -24,7 +24,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-# Environment and DB Setup --------------------------------------------------------------------------------------------
+# Environment and DB Setup
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
@@ -49,7 +49,7 @@ class Message(Base):
 
 Base.metadata.create_all(bind=engine)
 
-# FastAPI Setup -------------------------------------------------------------------------------------------------------
+# FastAPI Setup
 
 app = FastAPI(title="Legal Advisor Chatbot")
 
@@ -62,7 +62,7 @@ class ChatResponse(BaseModel):
     session_id: str
 
 
-# In-Memory Chat History Store ----------------------------------------------------------------------------------------
+# In-Memory Chat History Store
 
 session_store = {}
 
@@ -72,8 +72,7 @@ def get_session_history(session_id: str) -> InMemoryChatMessageHistory:
     return session_store[session_id]
 
 
-# Helper to Retrieve Session History ----------------------------------------------------------------------------------
-
+# Helper to Retrieve Session History
 def get_history_from_config(config):
 
     if isinstance(config, dict):
@@ -83,7 +82,7 @@ def get_history_from_config(config):
     return get_session_history(session_id)
 
 
-# Define the Prompt Template with a System Message --------------------------------------------------------------------
+# Define the Prompt Template with a System Message
 
 prompt = ChatPromptTemplate.from_messages([
     SystemMessagePromptTemplate.from_template(
@@ -96,7 +95,7 @@ prompt = ChatPromptTemplate.from_messages([
 
 
 
-# Compose the Chain and Wrap with RunnableWithMessageHistory ----------------------------------------------------------
+# Compose the Chain and Wrap with RunnableWithMessageHistory
 
 chat_model = ChatOpenAI(temperature=0.5)
 chain = prompt | chat_model
@@ -107,7 +106,7 @@ runnable = RunnableWithMessageHistory(
 )
 
 
-# API Endpoints -------------------------------------------------------------------------------------------------------
+# API Endpoints
 
 @app.post("/chat", response_model=ChatResponse)
 def chat_endpoint(request: ChatRequest):
