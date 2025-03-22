@@ -75,21 +75,16 @@ A conversational legal advisor chatbot built using OpenAI's LLMs to provide accu
    - **Challenge**: Without a memory mechanism, the chatbot would forget prior user questions.  
    - **Solution**: LangChain’s conversation memory is used. All user and AI responses are kept in a short buffer so the chatbot sees recent dialogue.
 
-2. **Legal Accuracy & Reliability**  
-   - **Challenge**: Providing accurate legal information is critical. Hallucinations or ambiguous responses are risky.  
-   - **Solution**:  
-     - The chatbot is restricted to legal topics.  
-     - It is instructed to politely decline or provide disclaimers when uncertain.  
-     - Short disclaimers (e.g., "I am not a licensed attorney...") are encouraged.
 
-3. **Storing Chat History Securely**  
+2. **Storing Chat History Securely**  
    - **Challenge**: Chat logs must be stored for auditing but might contain sensitive data.  
    - **Solution**:  
      - Messages are stored in PostgreSQL with basic authentication.  
      - Encryption or secure hosting is recommended for production.
 
-4. **Deployment Complexity**  
-   - **Challenge**: Coordinating backend, frontend, and database can be cumbersome.  
+
+3. **Deployment Complexity**  
+   - **Challenge**: Coordinating backend, frontend, and database can be difficult.  
    - **Solution**: Docker Compose simplifies the setup and allows all components to run with a single command.
 
 ---
@@ -97,7 +92,7 @@ A conversational legal advisor chatbot built using OpenAI's LLMs to provide accu
 ## Project Structure
 
 ```
-legal-advisor-chatbot/
+LegalAdvisorChatbot/
 ├── backend/
 │   ├── main.py                # FastAPI + LangChain logic
 │   ├── Dockerfile             # Backend container
@@ -122,8 +117,8 @@ legal-advisor-chatbot/
 
 2. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/legal-advisor-chatbot.git
-   cd legal-advisor-chatbot
+   git clone https://github.com/Mrki111/LegalAdvisorChatbot.git
+   cd LegalAdvisorChatbot
    ```
 
 3. **Create `.env` from the example**:
