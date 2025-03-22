@@ -161,7 +161,7 @@ LegalAdvisorChatbot/
 #### B) Set up PostgreSQL
 #### **Install PostgreSQL**
 
-1. Download PostgreSQL installer from: [https://www.postgresql.org/download/windows/](https://www.postgresql.org/download/windows/)
+1. Download PostgreSQL installer from: [https://www.enterprisedb.com/downloads/postgres-postgresql-downloads](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads)
 2. Run the installer and follow the prompts:
    - Choose a password for the `postgres` superuser (you'll need it later)
    - Leave default port `5432`
