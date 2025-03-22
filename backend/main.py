@@ -140,7 +140,6 @@ def chat_endpoint(request: ChatRequest):
 
         return ChatResponse(answer=ai_response, session_id=session_id)
     except Exception as e:
-        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 
