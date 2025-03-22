@@ -52,12 +52,12 @@ for role, message in st.session_state["messages"]:
     if role == "user":
 
         st.markdown(
-            f"<p style='text-align: right; color: blue; font-weight: bold;'>You: {message}</p>",
+            f"<p style='text-align: right;'><b>You:</b> {message}</p>",
             unsafe_allow_html=True,
         )
     else:
 
         st.markdown(
-            f"<p style='text-align: left; color: green; font-weight: bold;'>AI Advisor: {message}</p>",
+            f"<p style='text-align: left;'><b'>AI Advisor:</b> {message}</p>",
             unsafe_allow_html=True,
         )

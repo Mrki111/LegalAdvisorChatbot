@@ -1,14 +1,6 @@
 
 services:
 
-  # FASTAPI BACKEND
-  backend:
-    build: ./backend
-    container_name: legal_advisor_backend
-    env_file:
-      - .env
-    ports:
-      - "8000:8000"
 
   # POSTGRESQL DATABASE
   db:
@@ -24,6 +16,19 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+
+  # FASTAPI BACKEND
+  backend:
+    build: ./backend
+    container_name: legal_advisor_backend
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+
 
   # STREAMLIT FRONTEND
   frontend:
