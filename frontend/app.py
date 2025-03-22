@@ -2,7 +2,9 @@ import uuid
 import streamlit as st
 import requests
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
 
 # Title for the chat application
 st.title("Legal Advisor Chatbot")
@@ -13,7 +15,7 @@ if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
 
-FASTAPI_URL = os.getenv("FASTAPI_URL", "http://backend:8000")
+FASTAPI_URL = os.getenv("FASTAPI_URL")
 session_id = str(uuid.uuid4())
 
 # Send the user's question to the backend and return the AI response.

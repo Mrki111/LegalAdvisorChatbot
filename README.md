@@ -1,22 +1,100 @@
 # Legal Advisor Chatbot 🧑‍⚖️🤖
 
-A conversational legal advisor chatbot that uses OpenAI's LLMs to provide accurate and ethical legal information.  
-It uses **FastAPI** as the backend, **Streamlit** as the frontend, **PostgreSQL** to store chat history, and **LangChain** for prompt templates and conversation memory.
+A conversational legal advisor chatbot built using OpenAI's LLMs to provide accurate and ethical legal information.
+
+- **Backend**: FastAPI (with LangChain for prompt & memory)
+- **Frontend**: Streamlit (lightweight UI)
+- **Database**: PostgreSQL (stores all messages for audit and review)
+- **Orchestration**: Docker Compose (optional, recommended)
 
 ---
 
-## ✅ Features
+## Table of Contents
 
-- 🔍 **Legal-focused AI assistant** – only answers legal questions
-- 💬 **Chat history memory** – supports session-based follow-ups
-- 🧠 **LangChain integration** – templates and memory management
-- 🗃 **PostgreSQL** – stores all messages for audit and review
-- 🚀 **Dockerized stack** – run everything with one command
-- ⚡ **Streamlit UI** – lightweight chat interface
+1. [Overview & Architecture](#overview--architecture)  
+2. [Approach to the Legal Advisor Context](#approach-to-the-legal-advisor-context)  
+3. [Challenges & Solutions](#challenges--solutions)  
+4. [Project Structure](#project-structure)  
+5. [Setup & Usage](#setup--usage)  
+   - [Using Docker (Recommended)](#1-using-docker-recommended)  
+   - [Without Docker](#2-without-docker)  
+6. [Running the Backend](#running-the-backend)  
+7. [Running the Frontend](#running-the-frontend)  
+8. [Environment Variables](#environment-variables)  
+9. [LangChain Prompt & Memory](#langchain-prompt--memory)  
+10. [API Reference](#api-reference)  
+11. [License](#license)  
+12. [Author](#author)
 
 ---
 
-## 🗂 Project Structure
+## Overview & Architecture
+
+### High-Level Flow
+
+1. The user interacts with a **Streamlit** frontend (chat interface).
+2. Each query is sent to the **FastAPI** backend.
+3. The backend uses **LangChain** to:
+   - Format the prompt with a **legal advisor** system message.
+   - Maintain **conversation memory** so the chatbot can reference previous messages in the session.
+4. All messages (user & bot) are stored in **PostgreSQL** for auditing and legal compliance.
+5. The backend responds to Streamlit with the chatbot’s answer.
+6. The frontend displays the answer in the chat UI.
+
+### Components
+
+- **Frontend (Streamlit)**  
+  Renders a chat interface, sends user queries to FastAPI, and displays responses.  
+
+- **Backend (FastAPI + LangChain)**  
+  - API endpoints for sending/receiving chat messages.  
+  - Uses LangChain’s memory to handle session-based contexts.  
+  - Persists chat logs to PostgreSQL.  
+
+- **Database (PostgreSQL)**  
+  Stores user messages and bot responses.  
+
+- **Docker Compose**  
+  Optionally runs all three components (frontend, backend, database) in separate containers, orchestrated via a single command.
+
+---
+
+## Approach to the Legal Advisor Context
+
+1. **System Prompt**: A carefully crafted system message is used to instruct the model to respond only to legal inquiries and to politely decline any non-legal questions.
+2. **Role-based Messages**: OpenAI’s chat format allows the chatbot to differentiate messages from the user, system, and the assistant. This is used to maintain a consistent, “professional legal advisor” tone.
+3. **LangChain**:  
+   - **Prompt Templates**: A strict template is defined to keep the chatbot within legal subjects.  
+   - **Memory**: Conversation snippets are stored to ensure continuity; if the user references a previous question or context, the chatbot can recall that information accurately.
+
+---
+
+## Challenges & Solutions
+
+1. **Maintaining Context**  
+   - **Challenge**: Without a memory mechanism, the chatbot would forget prior user questions.  
+   - **Solution**: LangChain’s conversation memory is used. All user and AI responses are kept in a short buffer so the chatbot sees recent dialogue.
+
+2. **Legal Accuracy & Reliability**  
+   - **Challenge**: Providing accurate legal information is critical. Hallucinations or ambiguous responses are risky.  
+   - **Solution**:  
+     - The chatbot is restricted to legal topics.  
+     - It is instructed to politely decline or provide disclaimers when uncertain.  
+     - Short disclaimers (e.g., "I am not a licensed attorney...") are encouraged.
+
+3. **Storing Chat History Securely**  
+   - **Challenge**: Chat logs must be stored for auditing but might contain sensitive data.  
+   - **Solution**:  
+     - Messages are stored in PostgreSQL with basic authentication.  
+     - Encryption or secure hosting is recommended for production.
+
+4. **Deployment Complexity**  
+   - **Challenge**: Coordinating backend, frontend, and database can be cumbersome.  
+   - **Solution**: Docker Compose simplifies the setup and allows all components to run with a single command.
+
+---
+
+## Project Structure
 
 ```
 legal-advisor-chatbot/
@@ -30,64 +108,91 @@ legal-advisor-chatbot/
 │   ├── requirements.txt       # Frontend Python dependencies
 ├── docker-compose.yml         # Orchestrates backend, frontend, db
 ├── .env.example               # Template for secrets/config
-└── README.md                  # You're reading it
+└── README.md                  # Documentation (this file)
 ```
 
 ---
 
-## ⚙️ Local Setup (with Docker)
+## Setup & Usage
 
-This is the **recommended** way to run the project.
+### 1) Using Docker (Recommended)
 
-### 1. Install dependencies
+1. **Install Docker**  
+   - [Docker Desktop](https://www.docker.com/products/docker-desktop)
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop)
-- (Optional) [Git](https://git-scm.com/)
+2. **Clone the repository**:
+   ```bash
+   git clone https://github.com/yourusername/legal-advisor-chatbot.git
+   cd legal-advisor-chatbot
+   ```
 
-### 2. Clone the repository
+3. **Create `.env` from the example**:
+   ```bash
+   cp .env.example .env
+   ```
+   - Update `.env` with the actual **OpenAI API key** and database credentials.
+
+4. **Run Docker Compose**:
+   ```bash
+   docker-compose up --build
+   ```
+   - Backend: [http://localhost:8000](http://localhost:8000)  
+   - Frontend: [http://localhost:8501](http://localhost:8501)  
+   - PostgreSQL: internally at `db:5432`
+
+### 2) Without Docker
+
+#### A) Prerequisites
+
+- Python 3.10+ (Do not use python 3.13!) 
+- PostgreSQL installed locally or hosted  
+- Git (optional)
+
+#### B) Set up PostgreSQL
 
 ```bash
-git clone https://github.com/yourusername/legal-advisor-chatbot.git
-cd legal-advisor-chatbot
+psql -U postgres
+
+-- Inside psql shell:
+CREATE USER user WITH PASSWORD 'user';
+CREATE DATABASE legal_advisor_db OWNER user;
 ```
 
-### 3. Create your `.env` file
+Update `.env`:
+```bash
+POSTGRES_USER=user
+POSTGRES_PASSWORD=user
+POSTGRES_DB=legal_advisor_db
+POSTGRES_HOST=localhost
+```
 
+Or use cloud DB credentials:
+```bash
+DATABASE_URL=postgresql://user:password@host:port/dbname
+```
+
+#### C) Create `.env` file
 ```bash
 cp .env.example .env
 ```
-
-Edit `.env` and fill in your real OpenAI API key.
-
-### 4. Start all services
-
-```bash
-docker-compose up --build
-```
-
-- **Backend API**: http://localhost:8000  
-- **Streamlit UI**: http://localhost:8501  
-- **PostgreSQL**: exposed internally as `db:5432`
+Add your **OpenAI API Key** and DB connection info.
 
 ---
 
-## 🧪 Local Setup (Without Docker)
-
-Useful for debugging or development if you don't want Docker.
-
-### Backend (FastAPI)
+## Running the Backend
 
 ```bash
 cd backend
 python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+source venv/bin/activate  # or venv\Scripts\activate on Windows
 pip install -r requirements.txt
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
+Test at [http://localhost:8000/docs](http://localhost:8000/docs)
 
-### Frontend (Streamlit)
+---
 
-In another terminal:
+## Running the Frontend
 
 ```bash
 cd frontend
@@ -97,76 +202,64 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-Make sure your `.env` file exists and is loaded in both.
+Visit [http://localhost:8501](http://localhost:8501) in your browser.
 
 ---
 
-## 🔐 Environment Variables
+## Environment Variables
 
-The `.env` file must include the following:
-
-| Variable            | Description                               |
-|---------------------|-------------------------------------------|
-| `OPENAI_API_KEY`    | Your OpenAI API Key                       |
-| `POSTGRES_USER`     | Username for PostgreSQL                   |
-| `POSTGRES_PASSWORD` | Password for PostgreSQL                   |
-| `POSTGRES_DB`       | PostgreSQL database name                  |
-| `FASTAPI_URL`       | Backend URL for the Streamlit frontend    |
-
-Example values are included in `.env.example`.
+| Variable             | Description                                                  |
+|----------------------|--------------------------------------------------------------|
+| `OPENAI_API_KEY`     | OpenAI API Key                                               |
+| `POSTGRES_USER`      | PostgreSQL username                                          |
+| `POSTGRES_PASSWORD`  | PostgreSQL password                                          |
+| `POSTGRES_DB`        | PostgreSQL database name                                     |
+| `POSTGRES_HOST`      | PostgreSQL host                                              |
+| `FASTAPI_URL`        | URL of the backend (e.g., `http://localhost:8000`)          |
 
 ---
 
-## 🧠 LangChain Prompt
+## LangChain Prompt & Memory
 
-The chatbot uses this system prompt to control behavior:
+Default system prompt:
 
-> You are a helpful, professional legal advisor. You only answer questions strictly related to legal matters. If a user asks about anything outside the scope of legal topics, kindly respond that you are only able to assist with legal inquiries.
+> "You are a helpful, professional legal advisor. You only answer questions strictly related to legal matters. If a user asks about anything outside the scope of legal topics, politely respond that you are only able to assist with legal inquiries."
 
-It ensures the assistant stays on topic and avoids misuse.
+- Keeps responses on-topic.  
+- Memory allows for recall of recent messages and more natural dialogue.
 
 ---
 
-## 🧪 API Reference
+## API Reference
 
-FastAPI Swagger UI is available at:  
-[http://localhost:8000/docs](http://localhost:8000/docs)
+Auto-generated Swagger/OpenAPI docs: [http://localhost:8000/docs](http://localhost:8000/docs)
 
 ### `POST /chat`
-
-- Request: `{ "question": "Can I sue for breach of contract?", "session_id": "abc123" }`
-- Response: `{ "answer": "...", "session_id": "abc123" }`
+```json
+{
+  "question": "Can I sue for breach of contract?",
+  "session_id": "abc123"
+}
+```
+**Response:**
+```json
+{
+  "answer": "...",
+  "session_id": "abc123"
+}
+```
 
 ### `GET /chat-history?session_id=abc123`
-
-Returns an array of messages for a session.
-
----
-
-## 🐞 Troubleshooting
-
-- Streamlit shows connection error → check if backend is running
-- Missing `.env` values → copy from `.env.example`
-- Docker issue → run `docker-compose down -v` to reset containers and volumes
+Returns all messages for a session. Useful for auditing or debugging.
 
 ---
 
-## 📋 Commit Messages
+## Author
 
-Follow this format:
-- `Add Streamlit chat interface`
-- `Implement LangChain memory and prompt logic`
-- `Connect PostgreSQL and save chat history`
-- `Configure Docker Compose with three services`
+Made by Lazar Mrkic using:
+- Python, FastAPI, and LangChain for the backend  
+- Streamlit for the frontend  
+- PostgreSQL for data persistence  
 
----
 
-## 🧾 License
 
-MIT – free for personal and commercial use.
-
----
-
-## ✨ Author
-
-Made with ❤️ by [Your Name] using Python, FastAPI, LangChain, and Streamlit.
