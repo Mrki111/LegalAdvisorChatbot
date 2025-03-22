@@ -75,18 +75,23 @@ A conversational legal advisor chatbot built using OpenAI's LLMs to provide accu
    - **Challenge**: Without a memory mechanism, the chatbot would forget prior user questions.  
    - **Solution**: LangChain’s conversation memory is used. All user and AI responses are kept in a short buffer so the chatbot sees recent dialogue.
 
-
 2. **Storing Chat History Securely**  
    - **Challenge**: Chat logs must be stored for auditing but might contain sensitive data.  
    - **Solution**:  
      - Messages are stored in PostgreSQL with basic authentication.  
      - Encryption or secure hosting is recommended for production.
 
-
 3. **Deployment Complexity**  
    - **Challenge**: Coordinating backend, frontend, and database can be difficult.  
    - **Solution**: Docker Compose simplifies the setup and allows all components to run with a single command.
 
+4. **Connection Management**  
+   - **Challenge**: Creating a new psycopg connection for every call to `get_session_history` can work in a demo environment, but leads to performance issues under load.  
+   - **Solution**: FastAPI's [lifespan](https://fastapi.tiangolo.com/advanced/events/#lifespan-function) function is used to create a persistent PostgreSQL connection at app startup, stored in `app.state.sync_connection`. This connection is reused in every chat session.
+
+5. **Table Creation**  
+   - **Challenge**: Creating the chat history table on every request wastes resources and could lead to race conditions.  
+   - **Solution**: The required table schema is created once during the application's startup using `PostgresChatMessageHistory.create_tables()` inside the `lifespan` function. This ensures efficient resource usage and avoids redundant calls.
 ---
 
 ## Project Structure
@@ -125,8 +130,18 @@ LegalAdvisorChatbot/
    ```bash
    cp .env.example .env
    ```
-   - Update `.env` with the actual **OpenAI API key** and database credentials.
-
+   - Update `.env` with the: 
+     - Actual **OpenAI API key** 
+     - Database credentials for PostgreSQL: 
+       -  POSTGRES_USER=postgres
+       -  POSTGRES_PASSWORD=postgres
+       -  POSTGRES_DB=legal_advisor_db
+       -  POSTGRES_HOST=db
+     - FastAPI url: http://backend:8000     
+   
+      
+        
+   
 4. **Run Docker Compose**:
    ```bash
    docker-compose up --build
@@ -144,33 +159,68 @@ LegalAdvisorChatbot/
 - Git (optional)
 
 #### B) Set up PostgreSQL
+#### **Install PostgreSQL**
 
+1. Download PostgreSQL installer from: [https://www.postgresql.org/download/windows/](https://www.postgresql.org/download/windows/)
+2. Run the installer and follow the prompts:
+   - Choose a password for the `postgres` superuser (you'll need it later)
+   - Leave default port `5432`
+   - Install optional components like pgAdmin if desired
+
+#### Create a database
+
+After installation, you can use **pgAdmin** (GUI) or **psql** (CLI).
+
+##### Using `psql` (command line):
+Use postgres superuser
 ```bash
 psql -U postgres
-
--- Inside psql shell:
-CREATE USER user WITH PASSWORD 'user';
-CREATE DATABASE legal_advisor_db OWNER user;
 ```
 
-Update `.env`:
-```bash
-POSTGRES_USER=user
-POSTGRES_PASSWORD=user
-POSTGRES_DB=legal_advisor_db
-POSTGRES_HOST=localhost
+Then inside the prompt:
+
+```sql
+CREATE DATABASE legal_advisor_db;
+```
+To exit:
+
+```sql
+\q
 ```
 
-Or use cloud DB credentials:
-```bash
-DATABASE_URL=postgresql://user:password@host:port/dbname
-```
+
 
 #### C) Create `.env` file
 ```bash
 cp .env.example .env
 ```
-Add your **OpenAI API Key** and DB connection info.
+Add database credenitals:
+
+```bash
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=your_postgres_password
+POSTGRES_DB=legal_advisor_db
+POSTGRES_HOST=localhost
+```
+Or use cloud DB credentials:
+```bash
+DATABASE_URL=postgresql://user:password@host:port/dbname
+```
+
+
+Add the FastAPI url:
+```bash
+FASTAPI_URL=http://localhost:8000
+```
+Add your OPENAI_API_KEY:
+```bash
+OPENAI_API_KEY=you_api_key_here
+```
+
+
+
+
+
 
 ---
 

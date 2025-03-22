@@ -82,3 +82,7 @@ uvicorn==0.34.0
 watchdog==6.0.0
 yarl==1.18.3
 zstandard==0.23.0
+langchain-postgres==0.0.13
+pgvector==0.3.6
+psycopg==3.2.6
+psycopg-pool==3.2.6
