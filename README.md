@@ -202,12 +202,6 @@ POSTGRES_PASSWORD=your_postgres_password
 POSTGRES_DB=legal_advisor_db
 POSTGRES_HOST=localhost
 ```
-Or use cloud DB credentials:
-```bash
-DATABASE_URL=postgresql://user:password@host:port/dbname
-```
-
-
 Add the FastAPI url:
 ```bash
 FASTAPI_URL=http://localhost:8000
