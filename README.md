@@ -178,7 +178,7 @@ Add your **OpenAI API Key** and DB connection info.
 
 ```bash
 cd backend
-python -m venv venv
+python -m venv venv # or py -3.12 -m venv venv   
 source venv/bin/activate  # or venv\Scripts\activate on Windows
 pip install -r requirements.txt
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
@@ -191,8 +191,8 @@ Test at [http://localhost:8000/docs](http://localhost:8000/docs)
 
 ```bash
 cd frontend
-python -m venv venv
-source venv/bin/activate
+python -m venv venv # or py -3.12 -m venv venv   
+source venv/bin/activate # or venv\Scripts\activate on Windows
 pip install -r requirements.txt
 streamlit run app.py
 ```
