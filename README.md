@@ -130,17 +130,15 @@ LegalAdvisorChatbot/
    ```bash
    cp .env.example .env
    ```
-   - Update `.env` with the: 
-     - Actual **OpenAI API key** 
-     - Database credentials for PostgreSQL: 
-       -  POSTGRES_USER=postgres
-       -  POSTGRES_PASSWORD=postgres
-       -  POSTGRES_DB=legal_advisor_db
-       -  POSTGRES_HOST=db
-     - FastAPI url: http://backend:8000     
-   
-      
-        
+   - Update `.env` with the:
+   ```
+    Actual **OpenAI API key**  
+    Database credentials for PostgreSQL: 
+      - POSTGRES_USER=your_username
+      - POSTGRES_PASSWORD=your_password
+      - POSTGRES_DB=legal_advisor_db
+      - POSTGRES_HOST=db
+    FastAPI url: http://backend:8000
    
 4. **Run Docker Compose**:
    ```bash
@@ -148,7 +146,7 @@ LegalAdvisorChatbot/
    ```
    - Backend: [http://localhost:8000](http://localhost:8000)  
    - Frontend: [http://localhost:8501](http://localhost:8501)  
-   - PostgreSQL: internally at `db:5432`
+   - PostgreSQL: internally at `db:5432` (make sure the port is not being used by other applications)
 
 ### 2) Without Docker
 

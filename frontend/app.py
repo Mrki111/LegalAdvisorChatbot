@@ -58,6 +58,6 @@ for role, message in st.session_state["messages"]:
     else:
 
         st.markdown(
-            f"<p style='text-align: left;'><b'>AI Advisor:</b> {message}</p>",
+            f"<p style='text-align: left;'><b>AI Advisor:</b> {message}</p>",
             unsafe_allow_html=True,
         )

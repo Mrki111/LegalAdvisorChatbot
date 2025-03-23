@@ -1,8 +1,5 @@
-
 services:
 
-
-  # POSTGRESQL DATABASE
   db:
     image: postgres:17-alpine
     container_name: legal_advisor_db
@@ -16,8 +13,12 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
-  # FASTAPI BACKEND
   backend:
     build: ./backend
     container_name: legal_advisor_backend
@@ -26,11 +27,9 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
-
-
-  # STREAMLIT FRONTEND
   frontend:
     build: ./frontend
     container_name: legal_advisor_frontend
@@ -40,5 +39,6 @@ services:
       - "8501:8501"
     depends_on:
       - backend
+
 volumes:
   db_data:
