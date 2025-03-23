@@ -76,10 +76,8 @@ A conversational legal advisor chatbot built using OpenAI's LLMs to provide accu
    - **Solution**: LangChain’s conversation memory is used. All user and AI responses are kept in a short buffer so the chatbot sees recent dialogue.
 
 2. **Storing Chat History Securely**  
-   - **Challenge**: Chat logs must be stored for auditing but might contain sensitive data.  
-   - **Solution**:  
-     - Messages are stored in PostgreSQL with basic authentication.  
-     - Encryption or secure hosting is recommended for production.
+   - **Challenge**: Chat logs must be stored but might contain sensitive data.  
+   - **Solution**: Messages are stored in PostgreSQL with basic authentication.
 
 3. **Deployment Complexity**  
    - **Challenge**: Coordinating backend, frontend, and database can be difficult.  
@@ -130,15 +128,15 @@ LegalAdvisorChatbot/
    ```bash
    cp .env.example .env
    ```
-   - Update `.env` with the:
+   - Add to your `.env` file:
    ```
-    Actual **OpenAI API key**  
+    OPENAI_API_KEY=Actual **OpenAI API key**  
     Database credentials for PostgreSQL: 
-      - POSTGRES_USER=your_username
-      - POSTGRES_PASSWORD=your_password
+      - POSTGRES_USER=postgres        
+      - POSTGRES_PASSWORD=postgres    
       - POSTGRES_DB=legal_advisor_db
       - POSTGRES_HOST=db
-    FastAPI url: http://backend:8000
+    FASTAPI_URL=http://backend:8000
    
 4. **Run Docker Compose**:
    ```bash
@@ -147,6 +145,7 @@ LegalAdvisorChatbot/
    - Backend: [http://localhost:8000](http://localhost:8000)  
    - Frontend: [http://localhost:8501](http://localhost:8501)  
    - PostgreSQL: internally at `db:5432` (make sure the port is not being used by other applications)
+---
 
 ### 2) Without Docker
 
@@ -185,8 +184,11 @@ To exit:
 ```sql
 \q
 ```
-
-
+**Clone the repository**:
+   ```bash
+   git clone https://github.com/Mrki111/LegalAdvisorChatbot.git
+   cd LegalAdvisorChatbot
+   ```
 
 #### C) Create `.env` file
 ```bash
@@ -196,7 +198,7 @@ Add database credenitals:
 
 ```bash
 POSTGRES_USER=postgres
-POSTGRES_PASSWORD=your_postgres_password
+POSTGRES_PASSWORD=your_password # password for the postgres superuser
 POSTGRES_DB=legal_advisor_db
 POSTGRES_HOST=localhost
 ```
